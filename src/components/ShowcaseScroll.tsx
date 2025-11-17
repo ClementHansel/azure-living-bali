@@ -56,7 +56,7 @@ interface Props {
   setCurrentSlide: (i: number) => void;
   totalSlides: number;
   isLocked?: boolean;
-  requestUnlock?: () => void; // 🔥 MUST be included
+  requestUnlock?: () => void;
 }
 
 const ShowcaseScroll: React.FC<Props> = ({
@@ -74,13 +74,21 @@ const ShowcaseScroll: React.FC<Props> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { display: scrambledTitle, scrambleOnce } = useScrambleText();
 
-  // 🔥 Scramble new title only
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Scramble title
   useEffect(
     () => scrambleOnce(showcases[activeIndex].title, 850),
     [activeIndex, scrambleOnce]
   );
 
-  // 🔥 Slide navigation (disabled if animating OR disabled by lock)
   const goTo = useCallback(
     (i: number) => {
       if (animatingRef.current || i === activeIndex) return;
@@ -95,8 +103,9 @@ const ShowcaseScroll: React.FC<Props> = ({
     [activeIndex, setCurrentSlide, totalSlides]
   );
 
-  // 🔥 Parallax Tracking
+  // Parallax mouse tracking for desktop
   useEffect(() => {
+    if (isMobile) return;
     const el = containerRef.current;
     if (!el) return;
 
@@ -116,60 +125,70 @@ const ShowcaseScroll: React.FC<Props> = ({
 
     el.addEventListener("mousemove", onMove);
     el.addEventListener("mouseleave", onLeave);
-
     return () => {
       el.removeEventListener("mousemove", onMove);
       el.removeEventListener("mouseleave", onLeave);
     };
-  }, []);
+  }, [isMobile]);
 
-  // 🔥 Smooth Parallax Animation
+  // Smooth parallax
   useEffect(() => {
     let raf: number;
-
     const tick = () => {
       setParallax((p) => ({
         x: p.x + (mouseRef.current.x * 40 - p.x) * 0.08,
         y: p.y + (mouseRef.current.y * 30 - p.y) * 0.08,
       }));
-
       raf = requestAnimationFrame(tick);
     };
-
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // 🔥 CORE FIX: Internal scroll handler only when locked
+  // Scroll wheel handler
   useEffect(() => {
     if (!isLocked) return;
 
     const wheelHandler = (e: WheelEvent) => {
       if (!isLocked) return;
 
-      // === EXIT CONDITIONS ===
       if (e.deltaY > 0 && currentSlide === totalSlides - 1) {
-        requestUnlock?.(); // Exit on DOWN beyond last slide
+        requestUnlock?.();
         return;
       }
-
       if (e.deltaY < 0 && currentSlide === 0) {
-        requestUnlock?.(); // Exit on UP beyond first slide
+        requestUnlock?.();
         return;
       }
 
-      // === INTERNAL SLIDE MOVEMENT ===
       if (e.deltaY > 0) goTo(currentSlide + 1);
       if (e.deltaY < 0) goTo(currentSlide - 1);
-
-      e.preventDefault(); // VERY IMPORTANT: block page scroll
+      e.preventDefault();
     };
 
     window.addEventListener("wheel", wheelHandler, { passive: false });
     return () => window.removeEventListener("wheel", wheelHandler);
   }, [isLocked, currentSlide, totalSlides, goTo, requestUnlock]);
 
-  // 🔥 Progress bar ratio (0 to 1)
+  // Touch swipe for mobile
+  const touchStartY = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    touchEndY.current = e.changedTouches[0].clientY;
+    const deltaY = touchStartY.current - touchEndY.current;
+    const THRESHOLD = 40;
+    if (deltaY > THRESHOLD) goTo(currentSlide + 1);
+    else if (deltaY < -THRESHOLD) goTo(currentSlide - 1);
+    touchStartY.current = null;
+    touchEndY.current = null;
+  };
+
   const progress = totalSlides > 1 ? activeIndex / (totalSlides - 1) : 0;
 
   return (
@@ -178,6 +197,8 @@ const ShowcaseScroll: React.FC<Props> = ({
       className="relative w-full h-screen overflow-hidden bg-black text-white select-none"
       role="group"
       aria-roledescription="carousel"
+      onTouchStart={isMobile ? handleTouchStart : undefined}
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
     >
       {/* BACKGROUND VIDEO */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -237,7 +258,6 @@ const ShowcaseScroll: React.FC<Props> = ({
                 willChange: "transform",
               }}
             />
-
             <ParallaxLayer
               depth={0.35}
               className="relative z-10"
@@ -248,16 +268,14 @@ const ShowcaseScroll: React.FC<Props> = ({
                 willChange: "transform",
               }}
             >
-              <h2 className="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
                 <span aria-hidden>{scrambledTitle}</span>
                 <span className="sr-only">{showcases[activeIndex].title}</span>
               </h2>
-
-              <p className="text-lg max-w-2xl mx-auto leading-relaxed opacity-90">
+              <p className="text-base sm:text-lg md:text-xl max-w-xl mx-auto leading-relaxed opacity-90">
                 {showcases[activeIndex].description}
               </p>
             </ParallaxLayer>
-
             <ParallaxLayer
               depth={0.65}
               className="absolute inset-0 z-20 pointer-events-none"
@@ -273,105 +291,121 @@ const ShowcaseScroll: React.FC<Props> = ({
       </div>
 
       {/* PROGRESS + DOTS */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 flex items-center gap-4">
-        {/* PROGRESS BAR */}
-        <div className="flex items-center">
-          <div
-            className="progress-column w-1 h-44 bg-white/10 rounded-full relative overflow-hidden"
-            aria-hidden
-            onClick={(e) => {
-              const col = (e.target as HTMLElement).closest(".progress-column");
-              if (!col) return;
+      {isMobile ? (
+        <div className="absolute bottom-4 left-4 right-4 z-30 flex gap-2 items-center justify-center">
+          {Array.from({ length: totalSlides }).map((_, i) => (
+            <button
+              key={i}
+              className={`flex-1 h-2 rounded-full ${
+                i === activeIndex ? "bg-white" : "bg-white/30"
+              }`}
+              onClick={() => goTo(i)}
+              title={`Go to slide ${i + 1}`} // ✅ Add title
+              aria-label={`Go to slide ${i + 1}`} // ✅ Screen reader label
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 flex items-center gap-4">
+          {/* PROGRESS BAR */}
+          <div className="flex items-center">
+            <div
+              className="progress-column w-1 h-44 bg-white/10 rounded-full relative overflow-hidden"
+              aria-hidden
+              onClick={(e) => {
+                const col = (e.target as HTMLElement).closest(
+                  ".progress-column"
+                );
+                if (!col) return;
 
-              const rect = col.getBoundingClientRect();
-              const clickY = e.nativeEvent.clientY - rect.top;
-              const ratio = clickY / rect.height;
-              const targetIndex = Math.round(ratio * (totalSlides - 1));
+                const rect = col.getBoundingClientRect();
+                const clickY = e.nativeEvent.clientY - rect.top;
+                const ratio = clickY / rect.height;
+                const targetIndex = Math.round(ratio * (totalSlides - 1));
 
-              goTo(targetIndex);
+                goTo(targetIndex);
+              }}
+            >
+              <motion.div
+                initial={false}
+                animate={{ height: `${Math.max(4, progress * 100)}%` }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute bottom-0 left-0 right-0 bg-white rounded-full"
+              />
+            </div>
+          </div>
+
+          {/* DOT NAVIGATION */}
+          <motion.nav
+            aria-label="Showcase navigation"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: { staggerChildren: 0.08, delayChildren: 0.32 },
+              },
             }}
           >
-            <motion.div
-              initial={false}
-              animate={{ height: `${Math.max(4, progress * 100)}%` }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-full"
-            />
-          </div>
-        </div>
-
-        {/* DOT NAVIGATION */}
-        <motion.nav
-          aria-label="Showcase navigation"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {
-              transition: { staggerChildren: 0.08, delayChildren: 0.32 },
-            },
-          }}
-        >
-          <ul className="flex flex-col gap-3">
-            {Array.from({ length: totalSlides }).map((_, i) => {
-              const isActive = i === activeIndex;
-
-              return (
-                <motion.li
-                  key={i}
-                  variants={{
-                    hidden: { opacity: 0, x: 10 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                >
-                  <motion.button
-                    onClick={() => goTo(i)}
-                    className="relative w-4 h-4 flex items-center justify-center"
-                    aria-label={`Go to slide ${i + 1}`}
-                    whileTap={{ scale: 0.95 }}
+            <ul className="flex flex-col gap-3">
+              {Array.from({ length: totalSlides }).map((_, i) => {
+                const isActive = i === activeIndex;
+                return (
+                  <motion.li
+                    key={i}
+                    variants={{
+                      hidden: { opacity: 0, x: 10 },
+                      visible: { opacity: 1, x: 0 },
+                    }}
                   >
-                    <motion.span
-                      layout
-                      transition={{
-                        type: "spring",
-                        stiffness: 320,
-                        damping: 28,
-                      }}
-                      className={`block rounded-full ${
-                        isActive ? "w-4 h-4" : "w-2 h-2"
-                      } bg-white`}
-                      style={{
-                        opacity: isActive ? 1 : 0.6,
-                        boxShadow: isActive
-                          ? "0 6px 20px rgba(255,255,255,0.08)"
-                          : "none",
-                      }}
-                    />
-
-                    {isActive && (
+                    <motion.button
+                      onClick={() => goTo(i)}
+                      className="relative w-4 h-4 flex items-center justify-center"
+                      aria-label={`Go to slide ${i + 1}`}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       <motion.span
-                        initial={{ scale: 0.6, opacity: 0.18 }}
-                        animate={{ scale: 1.8, opacity: 0.06 }}
+                        layout
                         transition={{
-                          duration: 0.9,
-                          repeat: Infinity,
-                          repeatType: "reverse",
-                          ease: "easeInOut",
+                          type: "spring",
+                          stiffness: 320,
+                          damping: 28,
                         }}
-                        className="absolute rounded-full w-8 h-8 -z-10"
+                        className={`block rounded-full ${
+                          isActive ? "w-4 h-4" : "w-2 h-2"
+                        } bg-white`}
                         style={{
-                          background:
-                            "radial-gradient(closest-side, rgba(255,255,255,0.06), rgba(255,255,255,0))",
+                          opacity: isActive ? 1 : 0.6,
+                          boxShadow: isActive
+                            ? "0 6px 20px rgba(255,255,255,0.08)"
+                            : "none",
                         }}
                       />
-                    )}
-                  </motion.button>
-                </motion.li>
-              );
-            })}
-          </ul>
-        </motion.nav>
-      </div>
+                      {isActive && (
+                        <motion.span
+                          initial={{ scale: 0.6, opacity: 0.18 }}
+                          animate={{ scale: 1.8, opacity: 0.06 }}
+                          transition={{
+                            duration: 0.9,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                            ease: "easeInOut",
+                          }}
+                          className="absolute rounded-full w-8 h-8 -z-10"
+                          style={{
+                            background:
+                              "radial-gradient(closest-side, rgba(255,255,255,0.06), rgba(255,255,255,0))",
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  </motion.li>
+                );
+              })}
+            </ul>
+          </motion.nav>
+        </div>
+      )}
     </section>
   );
 };

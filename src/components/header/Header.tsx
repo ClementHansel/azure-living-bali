@@ -1,113 +1,106 @@
+// src/components/header/Header.tsx
 "use client";
-import { useState, useCallback, useRef } from "react";
-import Link from "next/link";
+
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-
 import MenuPanel from "./MenuPanel";
-import TLDRReels from "./reels/TLDRReels";
 
-const Header: React.FC = () => {
+export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [tldrOpen, setTldrOpen] = useState(false);
-  const headerRef = useRef<HTMLElement | null>(null); // allow null for TS compatibility
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
-  const toggleMenu = useCallback(() => setMenuOpen((p) => !p), []);
-  const toggleTLDR = useCallback(() => setTldrOpen((p) => !p), []);
+  // Update header height for MenuPanel offset
+  useEffect(() => {
+    if (!headerRef.current) return;
+
+    const resize = () => setHeaderHeight(headerRef.current!.offsetHeight);
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
+
+  // Track scroll to toggle background
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 20) setScrolled(true);
+      else setScrolled(false);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header
-      ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex items-center justify-between backdrop-blur-md"
-    >
-      {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
+    <>
+      {/* HEADER */}
+      <div
+        ref={headerRef}
+        className={`
+          fixed top-0 left-0 w-full z-200
+          flex items-center justify-between
+          px-6 py-4
+          transition-all duration-300
+          ${
+            scrolled
+              ? "backdrop-blur-xl bg-white/70 border-b border-white/20"
+              : "bg-transparent border-none"
+          }
+          overflow-visible
+        `}
       >
-        <Link href="/" className="text-xl md:text-2xl font-bold tracking-wide">
-          NEO
-        </Link>
-      </motion.div>
+        {/* LOGO */}
+        <div className="text-lg font-semibold tracking-tight text-black whitespace-nowrap">
+          NEO THE AGENCY
+        </div>
 
-      {/* Menu / TLDR Buttons */}
-      <div className="flex items-center space-x-2 md:space-x-4 relative w-full max-w-[60%] md:max-w-[50%]">
-        <motion.div
-          layout
-          className={`flex items-center justify-between px-4 py-2 rounded-full border transition-all duration-300 w-full ${
-            menuOpen ? "bg-gray-100 border-gray-400" : "border-gray-300"
-          }`}
+        {/* HAMBURGER BUTTON */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+          className="
+            relative 
+            w-14 h-14
+            flex items-center justify-center
+            shrink-0
+            overflow-visible
+            z-500
+          "
         >
-          <span className="text-sm text-gray-500 select-none hidden md:block">
-            Explore projects...
-          </span>
-          <span className="text-sm text-gray-500 select-none md:hidden">
-            Menu
-          </span>
+          {/* TOP LINE */}
+          <motion.span
+            animate={
+              menuOpen
+                ? { rotate: 45, translateY: -2 }
+                : { rotate: 0, translateY: -8 }
+            }
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute w-7 h-0.5 bg-black rounded-full"
+          />
 
-          <button
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-            title="Toggle menu"
-            className="ml-2 relative w-6 h-6 flex items-center justify-center"
-          >
-            <motion.span
-              animate={menuOpen ? { rotate: 45, y: 0 } : { rotate: 0, y: -5 }}
-              className="absolute block w-6 h-0.5 bg-black rounded"
-            />
-            <motion.span
-              animate={menuOpen ? { rotate: -45, y: 0 } : { rotate: 0, y: 5 }}
-              className="absolute block w-6 h-0.5 bg-black rounded"
-            />
-          </button>
-        </motion.div>
+          {/* MIDDLE LINE */}
+          <motion.span
+            animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="absolute w-7 h-0.5 bg-black rounded-full"
+          />
 
-        {!menuOpen && (
-          <button
-            onClick={toggleTLDR}
-            aria-label="Open TLDR"
-            title="Open TLDR"
-            className="block md:hidden text-sm font-medium px-3 py-2 rounded-full border hover:bg-gray-100"
-          >
-            TL;DR
-          </button>
-        )}
+          {/* BOTTOM LINE */}
+          <motion.span
+            animate={
+              menuOpen
+                ? { rotate: -45, translateY: 2 }
+                : { rotate: 0, translateY: 8 }
+            }
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute w-7 h-0.5 bg-black rounded-full"
+          />
+        </button>
       </div>
 
-      {/* Contact Button (desktop only) */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.45 }}
-        className="hidden md:block"
-      >
-        <Link
-          href="/contact"
-          className="px-4 py-2 rounded-full bg-black text-white text-sm hover:bg-gray-800"
-        >
-          Contact
-        </Link>
-      </motion.div>
-
-      {/* Floating card menu panel under header */}
-      <MenuPanel
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        onTLDR={() => {
-          setMenuOpen(false);
-          setTldrOpen(true);
-        }}
-        anchorRef={headerRef} // type-safe now
-      />
-
-      {/* TLDR Reels floating panel */}
-      <TLDRReels
-        open={tldrOpen}
-        onClose={() => setTldrOpen(false)}
-        anchorRef={headerRef} // type-safe now
-      />
-    </header>
+      {/* MENU PANEL */}
+      <MenuPanel open={menuOpen} headerHeight={headerHeight} />
+    </>
   );
-};
-
-export default Header;
+}

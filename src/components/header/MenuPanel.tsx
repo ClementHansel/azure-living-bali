@@ -1,148 +1,74 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MenuPanelProps {
   open: boolean;
-  onClose: () => void;
-  onTLDR: () => void;
-  anchorRef?: React.RefObject<HTMLElement | null>; // optional header ref
-  maxWidth?: "screen-sm" | "screen-md" | "screen-lg" | "screen-xl";
-  dragVelocityThreshold?: number;
-  dragOffsetThreshold?: number;
+  headerHeight: number;
 }
 
-export default function MenuPanel({
-  open,
-  onClose,
-  onTLDR,
-  anchorRef,
-  maxWidth = "screen-md",
-  dragVelocityThreshold = 700,
-  dragOffsetThreshold = 140,
-}: MenuPanelProps) {
-  const [panelPosition, setPanelPosition] = useState({ top: 60, left: 0 });
-  const panelRef = useRef<HTMLDivElement | null>(null);
+export default function MenuPanel({ open, headerHeight }: MenuPanelProps) {
+  // Define menu items and their target section IDs
+  const MENU_ITEMS: { label: string; target: string }[] = [
+    { label: "Home", target: "hero" },
+    { label: "Who we are", target: "company" },
+    { label: "Our Projects", target: "projects" },
+    { label: "What we do", target: "whatwedo" },
+    { label: "Contact Us", target: "contact" },
+  ];
 
-  /** Map maxWidth string to Tailwind class */
-  const maxWidthClassMap: Record<string, string> = {
-    "screen-sm": "max-w-screen-sm",
-    "screen-md": "max-w-screen-md",
-    "screen-lg": "max-w-screen-lg",
-    "screen-xl": "max-w-screen-xl",
-  };
-  const maxWidthClass = maxWidthClassMap[maxWidth] || "max-w-screen-md";
-
-  /** Position panel relative to anchor */
-  useEffect(() => {
-    if (anchorRef?.current) {
-      const rect = anchorRef.current.getBoundingClientRect();
-      setPanelPosition({ top: rect.bottom + 8, left: 0 });
-    } else {
-      setPanelPosition({ top: 60, left: 0 });
-    }
-  }, [open, anchorRef]);
-
-  /** Drag-to-close logic */
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    if (
-      Math.abs(info.velocity.y) > dragVelocityThreshold ||
-      Math.abs(info.offset.y) > dragOffsetThreshold
-    ) {
-      onClose();
-    }
+  // Scroll to section smoothly
+  const handleClick = (targetId: string) => {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ y: -500, opacity: 0 }}
+          animate={{ y: headerHeight, opacity: 1 }}
+          exit={{ y: -500, opacity: 0 }}
+          transition={{
+            duration: 0.55,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          style={{ top: 0 }}
+          className="
+            fixed left-0 w-full h-dvh
+            bg-white/90 backdrop-blur-2xl
+            z-150
+            shadow-[0_10px_40px_-10px_rgba(0,0,0,0.25)]
+            border-b border-white/20
+            px-8 pt-10
+          "
         >
-          {/* Backdrop */}
-          <motion.div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-
-          {/* Panel */}
-          <motion.div
-            ref={panelRef}
-            drag="y"
-            dragConstraints={{ top: -Infinity, bottom: Infinity }}
-            onDragEnd={handleDragEnd}
-            style={{
-              top: panelPosition.top,
-              left: panelPosition.left || "50%",
-              transform: panelPosition.left ? undefined : "translateX(-50%)",
-            }}
-            className="absolute z-50 flex justify-center w-full "
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className={`relative w-full ${maxWidthClass} max-h-[85vh] bg-white rounded-3xl border border-gray-300 shadow-2xl overflow-auto`}
-            >
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="absolute top-3 right-3 z-40 text-2xl"
-                aria-label="Close menu"
+          <nav className="flex flex-col space-y-6 mt-4">
+            {MENU_ITEMS.map((item, i) => (
+              <motion.a
+                key={item.label}
+                onClick={() => handleClick(item.target)}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{
+                  delay: 0.15 + i * 0.06,
+                  duration: 0.45,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="
+                  text-black text-3xl font-semibold tracking-tight
+                  relative cursor-pointer
+                  transition-all duration-300
+                  hover:text-gray-800
+                "
               >
-                ✕
-              </button>
-
-              {/* Menu links */}
-              <nav className="flex flex-col p-6 space-y-4 text-lg">
-                <Link
-                  href="/projects"
-                  onClick={onClose}
-                  className="hover:underline"
-                >
-                  Projects
-                </Link>
-                <Link
-                  href="/about"
-                  onClick={onClose}
-                  className="hover:underline"
-                >
-                  About
-                </Link>
-                <Link
-                  href="/services"
-                  onClick={onClose}
-                  className="hover:underline"
-                >
-                  Services
-                </Link>
-                <Link
-                  href="/contact"
-                  onClick={onClose}
-                  className="hover:underline"
-                >
-                  Contact Us
-                </Link>
-                <button
-                  onClick={() => {
-                    onTLDR();
-                    onClose();
-                  }}
-                  className="text-left hover:underline"
-                >
-                  TL;DR
-                </button>
-              </nav>
-            </motion.div>
-          </motion.div>
+                {item.label}
+                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+              </motion.a>
+            ))}
+          </nav>
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import { motion, easeOut } from "framer-motion";
 
 export const Footer = () => {
@@ -21,7 +21,7 @@ export const Footer = () => {
           <h3 className="text-3xl font-semibold tracking-tight">
             NEO THE AGENCY
           </h3>
-          <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4 sm:gap-8 text-gray-400 text-sm uppercase tracking-widest">
+          {/* <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4 sm:gap-8 text-gray-400 text-sm uppercase tracking-widest">
             <Link
               href="/careers"
               className="hover:text-white transition-colors duration-300"
@@ -34,7 +34,7 @@ export const Footer = () => {
             >
               Connect
             </Link>
-          </div>
+          </div> */}
         </motion.div>
 
         {/* Right section: legal */}
@@ -46,20 +46,27 @@ export const Footer = () => {
           className="space-y-4 text-gray-400 text-sm"
         >
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 justify-center md:justify-end">
-            <Link
-              href="/privacy"
+            <a
+              href="/privacy/PrivacyPolicy.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-white transition-colors duration-300"
             >
               Privacy Policy
-            </Link>
+            </a>
+
             <span className="hidden sm:block text-gray-600">|</span>
-            <Link
-              href="/cookies"
+
+            <a
+              href="/cookies/CookiePolicy.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-white transition-colors duration-300"
             >
               Cookie Preference
-            </Link>
+            </a>
           </div>
+
           <p className="text-xs text-gray-500 tracking-widest uppercase">
             © {new Date().getFullYear()} Neo The Agency. All Rights Reserved.
           </p>

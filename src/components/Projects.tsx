@@ -43,34 +43,39 @@ export default function Projects() {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
       },
     },
   };
 
   const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: EASING },
+      transition: { duration: 0.7, ease: EASING },
     },
   };
 
   return (
     <section
       ref={ref}
-      className="min-h-screen bg-white text-black flex flex-col items-center justify-center px-6 md:px-12 py-24"
+      className="
+        bg-white text-black
+        flex flex-col items-center justify-center
+        px-6 md:px-12
+        py-4 sm:py-4 md:py-4
+      "
     >
       {/* Section Header */}
       <motion.h2
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 25 }}
         animate={
           inView
             ? { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASING } }
-            : { opacity: 0, y: 30 }
+            : { opacity: 0, y: 25 }
         }
-        className="text-4xl md:text-6xl font-bold mb-16 text-center"
+        className="text-4xl md:text-6xl font-bold mb-12 sm:mb-16 text-center"
       >
         Our Projects
       </motion.h2>
@@ -80,15 +85,23 @@ export default function Projects() {
         variants={containerVariants}
         initial="hidden"
         animate={inView ? "visible" : "hidden"}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl"
+        className="
+          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+          gap-10 sm:gap-12
+          max-w-7xl w-full
+        "
       >
         {projects.map((p) => (
           <motion.div
             key={p.id}
             variants={cardVariants}
-            className="group rounded-3xl overflow-hidden bg-gray-50 shadow-sm hover:shadow-lg transition-shadow duration-500"
+            className="
+              group rounded-3xl overflow-hidden
+              bg-gray-50 shadow-sm
+              hover:shadow-lg transition-shadow duration-500
+            "
           >
-            <div className="relative w-full h-72">
+            <div className="relative w-full h-64 sm:h-72 md:h-80">
               <Image
                 src={p.image}
                 alt={p.title}
@@ -96,12 +109,16 @@ export default function Projects() {
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </div>
-            <div className="p-6 md:p-8">
+
+            <div className="p-6 sm:p-7 md:p-8">
               <h3 className="text-2xl md:text-3xl font-semibold mb-2">
                 {p.title}
               </h3>
+
               {p.subtitle && <p className="text-gray-500 mb-2">{p.subtitle}</p>}
+
               <p className="text-sm font-medium text-gray-700 mb-4">{p.role}</p>
+
               <p className="text-gray-600 text-sm leading-relaxed">
                 {p.services}
               </p>

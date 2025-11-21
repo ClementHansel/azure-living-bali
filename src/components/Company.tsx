@@ -10,23 +10,22 @@ export default function Company() {
   const EASING: [number, number, number, number] = [0.6, 0.01, 0.05, 0.95];
 
   const letterVariants: Variants = {
-    hidden: { opacity: 0, y: 80 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASING } },
+    hidden: { opacity: 0, y: 60 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: EASING },
+    },
     exitLeft: {
       opacity: 0,
-      x: -100,
-      transition: { duration: 0.6, ease: EASING },
-    },
-    exitRight: {
-      opacity: 0,
-      x: 100,
-      transition: { duration: 0.6, ease: EASING },
+      x: -60,
+      transition: { duration: 0.55, ease: EASING },
     },
   };
 
   const containerVariants: Variants = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.05 } },
+    visible: { transition: { staggerChildren: 0.045 } },
     exitLeft: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
   };
 
@@ -35,11 +34,20 @@ export default function Company() {
   return (
     <section
       ref={ref}
-      className="min-h-screen flex flex-col items-center justify-center bg-white text-black relative overflow-hidden px-4 sm:px-6"
+      className="
+        flex flex-col items-center justify-center
+        bg-white text-black relative overflow-hidden
+        px-4 sm:px-6
+        py-8 sm:py-12 md:py-16
+      "
     >
-      {/* Animated Company Title */}
+      {/* Company Title */}
       <motion.h1
-        className="text-4xl sm:text-5xl md:text-8xl font-bold tracking-tight flex flex-wrap justify-center text-center"
+        className="
+          text-4xl sm:text-5xl md:text-7xl lg:text-8xl 
+          font-bold tracking-tight 
+          flex flex-wrap justify-center text-center
+        "
         variants={containerVariants}
         initial="hidden"
         animate={inView ? "visible" : "exitLeft"}
@@ -53,22 +61,87 @@ export default function Company() {
 
       {/* Subtitle */}
       <motion.p
-        initial={{ opacity: 0, y: 60 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={
           inView
             ? {
                 opacity: 1,
                 y: 0,
-                transition: { delay: 0.8, duration: 1, ease: EASING },
+                transition: { delay: 0.6, duration: 0.8, ease: EASING },
               }
-            : { opacity: 0, y: 60, transition: { duration: 0.6, ease: EASING } }
+            : { opacity: 0, y: 40, transition: { duration: 0.5, ease: EASING } }
         }
-        className="mt-4 sm:mt-6 text-base sm:text-lg md:text-2xl text-gray-600 max-w-md sm:max-w-xl md:max-w-2xl text-center leading-relaxed"
+        className="
+    mt-3 sm:mt-5 md:mt-6
+    text-base sm:text-lg md:text-2xl
+    text-gray-600
+    max-w-sm sm:max-w-xl md:max-w-2xl
+    text-center leading-relaxed
+  "
       >
-        We craft interactive experiences, digital products, and creative
-        strategies that connect ideas to people — bridging design, technology,
-        and emotion.
+        <span>
+          We craft interactive experiences, digital products, and creative
+          strategies that connect ideas to people.
+        </span>
+        <br />
+        <span className="block mt-2">
+          Bridging design, technology, and emotion.
+        </span>
       </motion.p>
+
+      {/* CTA BUTTONS */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={
+          inView
+            ? {
+                opacity: 1,
+                y: 0,
+                transition: { delay: 1.0, duration: 0.8, ease: EASING },
+              }
+            : { opacity: 0, y: 30 }
+        }
+        className="mt-8 flex flex-col sm:flex-row items-center gap-4"
+      >
+        {/* Contact Form */}
+        <button
+          onClick={() => {
+            const contactSection = document.getElementById("contact-form");
+            if (contactSection) {
+              contactSection.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+          className="
+            px-6 py-3
+            bg-black text-white
+            rounded-full
+            text-base sm:text-lg
+            hover:bg-gray-900
+            transition-all duration-300
+            shadow-lg shadow-black/10
+          "
+        >
+          Contact Us
+        </button>
+
+        {/* WhatsApp */}
+        <a
+          href="https://wa.me/6281234567890"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="
+    px-6 py-3
+    border border-black
+    rounded-full
+    text-base sm:text-lg
+    text-black
+    hover:bg-black hover:text-white
+    transition-all duration-300
+  "
+        >
+          WhatsApp Us
+        </a>
+      </motion.div>
 
       {/* Background Accent */}
       <motion.div
@@ -77,7 +150,7 @@ export default function Company() {
           inView
             ? {
                 scale: 1,
-                opacity: 0.06,
+                opacity: 0.07,
                 transition: { duration: 2, ease: EASING },
               }
             : {
@@ -88,7 +161,7 @@ export default function Company() {
         }
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
       >
-        <div className="w-4/5 sm:w-3/5 md:w-3/5 h-4/5 sm:h-3/5 md:h-3/5 rounded-full bg-linear-to-r from-black to-gray-500 blur-2xl sm:blur-3xl" />
+        <div className="w-4/5 sm:w-3/5 md:w-2/5 h-4/5 sm:h-3/5 md:h-2/5 rounded-full bg-linear-to-r from-black to-gray-500 blur-2xl sm:blur-3xl" />
       </motion.div>
     </section>
   );

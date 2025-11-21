@@ -1,66 +1,199 @@
+// FULL UPDATED HERO.TSX WITH 2-SCREEN STRUCTURE, AUTOPLAY INTRO, NEW TEXT, MENU BLINK, AUTO-CYCLE, CLICK TO CHANGE, AND FULL-HEIGHT VIDEO
+
 "use client";
-import React, { useEffect, useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-} from "framer-motion";
 
-const Hero: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const heroRef = useRef<HTMLDivElement | null>(null);
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, EasingFunction } from "framer-motion";
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {
-        video.muted = true;
-        video.play();
-      });
+/** --------------------------------------------------------------------------
+ * MENU CONFIG
+ * -------------------------------------------------------------------------- */
+type MenuItem = {
+  id: string;
+  label: string;
+  image: string;
+};
+
+const MENU: MenuItem[] = [
+  { id: "digital", label: "digital", image: "/images/Digital.jpg" },
+  {
+    id: "marketing",
+    label: "marketing strategy.",
+    image: "/images/MarketingStrategy.png",
+  },
+  { id: "creatives", label: "creatives.", image: "/images/Creative.jpg" },
+  { id: "technology", label: "technology.", image: "/images/Technology.webp" },
+  { id: "ads", label: "ads.", image: "/images/ads.webp" },
+];
+
+const AUTO_CYCLE_MS = 5000;
+
+/** --------------------------------------------------------------------------
+ * EASING (A+2+i CURVE)
+ * -------------------------------------------------------------------------- */
+function cubicBezier(
+  p1x: number,
+  p1y: number,
+  p2x: number,
+  p2y: number
+): EasingFunction {
+  const cx = 3 * p1x;
+  const bx = 3 * (p2x - p1x) - cx;
+  const ax = 1 - cx - bx;
+
+  const cy = 3 * p1y;
+  const by = 3 * (p2y - p1y) - cy;
+  const ay = 1 - cy - by;
+
+  const sampleX = (t: number) => ((ax * t + bx) * t + cx) * t;
+  const sampleY = (t: number) => ((ay * t + by) * t + cy) * t;
+  const slopeX = (t: number) => (3 * ax * t + 2 * bx) * t + cx;
+
+  const solve = (x: number) => {
+    let t = x;
+    for (let i = 0; i < 8; i++) {
+      const x2 = sampleX(t) - x;
+      if (Math.abs(x2) < 1e-6) return t;
+      const d = slopeX(t);
+      if (Math.abs(d) < 1e-6) break;
+      t = t - x2 / d;
     }
+    let t0 = 0;
+    let t1 = 1;
+    t = x;
+    while (t0 < t1) {
+      const x2 = sampleX(t);
+      if (Math.abs(x2 - x) < 1e-6) return t;
+      if (x > x2) t0 = t;
+      else t1 = t;
+      t = (t0 + t1) / 2;
+    }
+    return t;
+  };
+
+  return (t: number) => sampleY(solve(t));
+}
+
+const cinematic = cubicBezier(0.22, 1, 0.36, 1);
+const softEase = cubicBezier(0.25, 0.1, 0.25, 1);
+
+/** --------------------------------------------------------------------------
+ * COMPONENT
+ * -------------------------------------------------------------------------- */
+export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const secondRef = useRef<HTMLDivElement | null>(null);
+
+  const [introPlaying, setIntroPlaying] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isSecondInView, setIsSecondInView] = useState(false);
+  const [blink, setBlink] = useState(false);
+
+  const cycleTimer = useRef<number | null>(null);
+
+  /** AUTOPLAY VIDEO -------------------------------------------------------- */
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.play().catch(() => {
+      v.muted = true;
+      v.play().catch(() => {});
+    });
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
+  /** INTRO AUTO-PLAY -------------------------------------------------------- */
+  useEffect(() => {
+    const t = window.setTimeout(() => setIntroPlaying(false), 3600);
+    return () => window.clearTimeout(t);
+  }, []);
 
-  // --- Scroll-driven transforms ---
-  const line1X = useTransform(scrollYProgress, [0, 0.5], [0, -300]);
-  const line2X = useTransform(scrollYProgress, [0, 0.5], [0, 300]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  /** MENU BLINK WHEN ENTER SECOND SCREEN ----------------------------------- */
+  useEffect(() => {
+    if (!isSecondInView) return;
 
-  const indicatorOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
+    Promise.resolve().then(() => setBlink(true));
 
-  // --- Animation Variants ---
-  const lineVariants = {
-    initial: { opacity: 0, y: 40 },
+    const t = setTimeout(() => setBlink(false), 700);
+    return () => clearTimeout(t);
+  }, [isSecondInView]);
+
+  /** AUTO-CYCLE ------------------------------------------------------------- */
+  const startCycle = useCallback(() => {
+    if (cycleTimer.current) return;
+    cycleTimer.current = window.setInterval(() => {
+      setActiveIndex((i) => (i + 1) % MENU.length);
+    }, AUTO_CYCLE_MS) as unknown as number;
+  }, []);
+
+  const stopCycle = useCallback(() => {
+    if (!cycleTimer.current) return;
+    window.clearInterval(cycleTimer.current);
+    cycleTimer.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (isSecondInView) startCycle();
+    else stopCycle();
+    return () => stopCycle();
+  }, [isSecondInView, startCycle, stopCycle]);
+
+  /** OBSERVE SECOND SCREEN -------------------------------------------------- */
+  useEffect(() => {
+    const el = secondRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0];
+        setIsSecondInView(e.isIntersecting);
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  /** MANUAL SELECT ---------------------------------------------------------- */
+  const selectIndex = (i: number) => {
+    setActiveIndex(i);
+    stopCycle();
+    startCycle();
+  };
+
+  /** VARIANTS --------------------------------------------------------------- */
+  const introLineVariant = (d = 0) => ({
+    hidden: { opacity: 0, y: 18 },
     enter: {
       opacity: 1,
       y: 0,
-      transition: { duration: 1, ease: [0.25, 0.1, 0.25, 1] }, // "easeOut"
+      transition: { delay: d, duration: 0.9, ease: cinematic },
     },
-    exitLeft: {
+    exit: {
       opacity: 0,
-      x: -300,
-      transition: { duration: 1, ease: [0.42, 0, 0.58, 1] }, // "easeInOut"
+      y: -18,
+      transition: { duration: 0.7, ease: cinematic },
     },
-    exitRight: {
+  });
+
+  const imageVariants = {
+    initial: { opacity: 0, scale: 1.03, y: 12 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 1.25, ease: cinematic },
+    },
+    exit: {
       opacity: 0,
-      x: 300,
-      transition: { duration: 1, ease: [0.42, 0, 0.58, 1] },
+      scale: 0.995,
+      y: -8,
+      transition: { duration: 0.95, ease: cinematic },
     },
-  } as const;
+  };
 
   return (
-    <section
-      ref={heroRef}
-      className="relative min-h-screen w-full overflow-hidden"
-    >
-      {/* Sticky hero */}
+    <section className="w-full min-h-[200vh] relative overflow-hidden">
+      {/* STICKY FIRST SCREEN */}
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Background video */}
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
@@ -69,69 +202,156 @@ const Hero: React.FC = () => {
           muted
           playsInline
         >
-          <source
-            src="/images/azura_living_bali_DK8JvGtI4lW.mp4"
-            type="video/mp4"
-          />
+          <source src="/cut.mp4" type="video/mp4" />
         </video>
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-10" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/30 to-black/60" />
 
-        {/* Center text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 space-y-6 text-white uppercase font-light tracking-[0.15em] text-[clamp(1rem,3vw,2.5rem)] leading-[1.6]">
-          <AnimatePresence>
-            <motion.div
-              variants={lineVariants}
-              initial="initial"
-              animate="enter"
-              exit="exitLeft"
-              style={{ x: line1X, opacity: textOpacity }}
-              className="flex justify-center"
-            >
-              <span>WE CREATE CONNECTED DIGITAL ECOSYSTEMS</span>
-            </motion.div>
-            <motion.div
-              variants={lineVariants}
-              initial="initial"
-              animate="enter"
-              exit="exitRight"
-              transition={{ delay: 0.3 }}
-              style={{ x: line2X, opacity: textOpacity }}
-              className="flex justify-center"
-            >
-              <span>THROUGH DESIGN AND TECHNOLOGY.</span>
-            </motion.div>
-          </AnimatePresence>
+        <div className="absolute inset-0 z-20 grid grid-cols-12 h-full px-6 md:px-12">
+          {/* LEFT TEXT -------------------------------------------------------- */}
+          <div className="col-span-12 md:col-span-7 flex items-center">
+            <div className="max-w-2xl text-white">
+              <AnimatePresence mode="wait">
+                {introPlaying ? (
+                  <motion.div
+                    key="intro-block"
+                    initial="hidden"
+                    animate="enter"
+                    exit="exit"
+                    className="text-white"
+                  >
+                    <motion.h1
+                      variants={introLineVariant(0)}
+                      className="text-5xl md:text-6xl lg:text-7xl font-light leading-[0.95]"
+                    >
+                      Neo.
+                    </motion.h1>
+
+                    <motion.p
+                      variants={introLineVariant(0.15)}
+                      className="mt-6 text-lg md:text-xl font-light opacity-95"
+                    >
+                      Global luxury brand factory.
+                    </motion.p>
+
+                    <motion.p
+                      variants={introLineVariant(0.3)}
+                      className="mt-6 text-lg md:text-xl font-light opacity-95"
+                    >
+                      Prototyping in Bali and Berlin.
+                    </motion.p>
+
+                    <motion.p
+                      variants={introLineVariant(0.45)}
+                      className="mt-6 text-sm md:text-base font-light uppercase opacity-80"
+                    >
+                      founded by consultants and developers.
+                    </motion.p>
+                  </motion.div>
+                ) : (
+                  <motion.h2
+                    key="brand-small"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.1, ease: cinematic }}
+                    className="text-3xl md:text-4xl font-medium text-white"
+                  >
+                    Neo.
+                  </motion.h2>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          style={{ opacity: indicatorOpacity }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/70 z-30"
-        >
-          <div className="w-[26px] h-[42px] border-2 border-white/50 rounded-full flex justify-center relative">
-            <motion.div
-              className="w-1 h-2 bg-white rounded-full absolute top-2"
-              animate={{ y: [0, 12, 0], opacity: [1, 0.4, 1] }}
-              transition={{
-                repeat: Infinity,
-                duration: 2,
-                ease: "easeInOut",
-              }}
-            />
-          </div>
-          <motion.span
-            className="mt-3 text-xs tracking-widest font-light text-white/60"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ repeat: Infinity, duration: 3 }}
+        {/* SCROLL HINT -------------------------------------------------------- */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/70 text-xs uppercase tracking-widest">
+          <motion.div
+            animate={{ y: [0, 8, 0], opacity: [0.7, 1, 0.7] }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: softEase,
+            }}
           >
-            SCROLL
-          </motion.span>
-        </motion.div>
+            Scroll to explore
+          </motion.div>
+        </div>
+      </div>
+
+      {/* SECOND SCREEN -------------------------------------------------------- */}
+      <div
+        ref={secondRef}
+        className="relative h-screen w-full z-10 bg-transparent"
+      >
+        <div className="max-w-7xl mx-auto h-full px-6 md:px-12 grid grid-cols-12 gap-6 items-center">
+          {/* LEFT IMAGE PANEL */}
+          <div className="col-span-12 md:col-span-7 h-[68vh] md:h-[78vh] rounded-2xl overflow-hidden relative shadow-2xl">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={MENU[activeIndex].id}
+                src={MENU[activeIndex].image}
+                alt={MENU[activeIndex].label}
+                className="absolute inset-0 w-full h-full object-cover"
+                variants={imageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                draggable={false}
+              />
+            </AnimatePresence>
+
+            <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
+          </div>
+
+          {/* RIGHT MENU (DESKTOP ONLY) ---------------------------------------- */}
+
+          <div className="hidden md:flex col-span-12 md:col-span-5 h-full items-center">
+            <nav className="w-full flex flex-col items-start gap-6 text-gray-900">
+              <div
+                className={`uppercase tracking-widest text-sm ${
+                  blink ? "animate-pulse" : ""
+                }`}
+              >
+                Explore
+              </div>
+
+              <ul className="w-full flex flex-col gap-4">
+                {MENU.map((item, i) => {
+                  const active = i === activeIndex;
+                  return (
+                    <li key={item.id} className="w-full">
+                      <button
+                        onClick={() => selectIndex(i)}
+                        className="w-full text-left group"
+                      >
+                        <motion.span
+                          className={`text-2xl md:text-3xl font-light transition-colors duration-500 ${
+                            active
+                              ? "text-gray-900" // active menu item dark
+                              : "text-gray-600 group-hover:text-gray-800" // inactive lighter
+                          }`}
+                          animate={{
+                            x: active ? 6 : 0,
+                            opacity: active ? 1 : 0.85,
+                          }}
+                          transition={{ duration: 0.8, ease: cinematic }}
+                        >
+                          {item.label}
+                        </motion.span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="mt-4 text-xs text-gray-600 tracking-wide uppercase">
+                {activeIndex + 1} / {MENU.length}
+              </div>
+            </nav>
+          </div>
+        </div>
       </div>
     </section>
   );
-};
-
-export default Hero;
+}

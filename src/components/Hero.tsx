@@ -224,7 +224,7 @@ export default function Hero() {
                       variants={introLineVariant(0)}
                       className="text-5xl md:text-6xl lg:text-7xl font-light leading-[0.95]"
                     >
-                      Neo.
+                      NEO.
                     </motion.h1>
 
                     <motion.p
@@ -256,7 +256,7 @@ export default function Hero() {
                     transition={{ duration: 1.1, ease: cinematic }}
                     className="text-3xl md:text-4xl font-medium text-white"
                   >
-                    Neo.
+                    NEO THE AGENCY.
                   </motion.h2>
                 )}
               </AnimatePresence>

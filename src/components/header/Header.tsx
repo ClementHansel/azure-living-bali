@@ -21,7 +21,7 @@ export default function Header() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
-  // Track scroll to toggle background
+  // Track scroll to toggle background and text color
   useEffect(() => {
     const onScroll = () => {
       if (window.scrollY > 20) setScrolled(true);
@@ -31,6 +31,14 @@ export default function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Determine colors based on scroll and menu open
+  const isActive = scrolled || menuOpen; // header is "active" when scrolled or menu open
+  const headerBgClass = isActive
+    ? "backdrop-blur-xl bg-white/90 border-b border-white/20"
+    : "bg-transparent border-none";
+  const textColorClass = isActive ? "text-black" : "text-white";
+  const lineColorClass = isActive ? "bg-black" : "bg-white";
 
   return (
     <>
@@ -42,16 +50,14 @@ export default function Header() {
           flex items-center justify-between
           px-6 py-4
           transition-all duration-300
-          ${
-            scrolled
-              ? "backdrop-blur-xl bg-white/70 border-b border-white/20"
-              : "bg-transparent border-none"
-          }
+          ${headerBgClass}
           overflow-visible
         `}
       >
         {/* LOGO */}
-        <div className="text-lg font-semibold tracking-tight text-black whitespace-nowrap">
+        <div
+          className={`text-lg font-semibold tracking-tight whitespace-nowrap transition-colors duration-300 ${textColorClass}`}
+        >
           NEO THE AGENCY
         </div>
 
@@ -59,14 +65,7 @@ export default function Header() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
-          className="
-            relative 
-            w-14 h-14
-            flex items-center justify-center
-            shrink-0
-            overflow-visible
-            z-500
-          "
+          className="relative w-14 h-14 flex items-center justify-center shrink-0 overflow-visible z-500"
         >
           {/* TOP LINE */}
           <motion.span
@@ -76,14 +75,14 @@ export default function Header() {
                 : { rotate: 0, translateY: -8 }
             }
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute w-7 h-0.5 bg-black rounded-full"
+            className={`absolute w-7 h-0.5 rounded-full transition-colors duration-300 ${lineColorClass}`}
           />
 
           {/* MIDDLE LINE */}
           <motion.span
             animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="absolute w-7 h-0.5 bg-black rounded-full"
+            className={`absolute w-7 h-0.5 rounded-full transition-colors duration-300 ${lineColorClass}`}
           />
 
           {/* BOTTOM LINE */}
@@ -94,7 +93,7 @@ export default function Header() {
                 : { rotate: 0, translateY: 8 }
             }
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute w-7 h-0.5 bg-black rounded-full"
+            className={`absolute w-7 h-0.5 rounded-full transition-colors duration-300 ${lineColorClass}`}
           />
         </button>
       </div>

@@ -13,7 +13,10 @@ module.exports = {
         },
       },
       fontFamily: {
+        // Default sans font
         sans: ["Inter", "ui-sans-serif", "system-ui"],
+        // Söhne Mono for monospace text
+        mono: ['"Söhne Mono"', "monospace"],
       },
     },
   },

@@ -55,13 +55,13 @@ export default function Hero() {
     <section
       className="
         relative w-full 
-        min-h-screen 
+        min-h-[100svh]
         overflow-hidden 
         font-inter lowercase
       "
     >
-      {/* Sticky video wrapper (NOW ONLY h-screen) */}
-      <div className="sticky top-0 h-screen w-full">
+      {/* Sticky video wrapper */}
+      <div className="sticky top-0 h-[100svh] w-full">
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
@@ -76,14 +76,14 @@ export default function Hero() {
 
         <div className="absolute inset-0 bg-black/40" />
 
-        {/* LEFT INTRO TEXT — top aligned on all screens */}
+        {/* LEFT INTRO TEXT — always top aligned */}
         <div
           className="
             sticky top-0
-            h-screen 
-            flex items-start 
+            h-[100svh]
+            flex items-start
             px-6 md:px-12 
-            pt-30
+            pt-20
             z-20
           "
         >
@@ -112,8 +112,8 @@ export default function Hero() {
         {/* RIGHT MENU */}
         <div
           className="
-            absolute bottom-30 right-6 
-            md:bottom-30 md:right-16 
+            absolute bottom-20 right-6 
+            md:bottom-20 md:right-16 
             z-30 text-right
           "
         >

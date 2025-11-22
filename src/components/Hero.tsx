@@ -83,7 +83,7 @@ export default function Hero() {
             h-screen 
             flex items-start 
             px-6 md:px-12 
-            pt-24
+            pt-30
             z-20
           "
         >
@@ -112,8 +112,8 @@ export default function Hero() {
         {/* RIGHT MENU */}
         <div
           className="
-            absolute bottom-20 right-6 
-            md:bottom-20 md:right-16 
+            absolute bottom-30 right-6 
+            md:bottom-30 md:right-16 
             z-30 text-right
           "
         >

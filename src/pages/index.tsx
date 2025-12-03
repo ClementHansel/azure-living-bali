@@ -1,14 +1,14 @@
 // src/pages/index.tsx
 "use client";
 
-import Company from "@/components/Company";
-import Hero from "@/components/Hero";
+import Company from "@/components/home/Company";
+import ContactUs from "@/components/home/ContactUs";
+import COOTestimony from "@/components/home/COOTestimony";
+import { Footer } from "@/components/home/Footer";
+import Hero from "@/components/home/Hero";
+import Projects from "@/components/home/Projects";
+import WhatWeDo from "@/components/home/WhatWeDo";
 import { Project } from "@/types";
-import Projects from "@/components/Projects";
-import WhatWeDo from "@/components/WhatWeDo";
-import COOTestimony from "@/components/COOTestimony";
-import { Footer } from "@/components/Footer";
-import ContactUs from "@/components/ContactUs";
 
 export default function Home({}: { projects: Project[] }) {
   return (
@@ -42,9 +42,6 @@ export default function Home({}: { projects: Project[] }) {
       <div id="contact">
         <ContactUs />
       </div>
-
-      {/* Footer */}
-      <Footer />
     </>
   );
 }

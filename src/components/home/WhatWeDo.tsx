@@ -71,7 +71,7 @@ export default function WhatWeDo() {
     },
     {
       title: "PERFORMANCE MARKETING (ADS)",
-      subtitle: "Design that moves people",
+      subtitle: "Precision Ads. Predictable Growth.",
       points: [
         "High Conversion Landingpages",
         "Tracking & Analytics",

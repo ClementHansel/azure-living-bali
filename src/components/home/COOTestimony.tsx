@@ -25,7 +25,7 @@ const fadeUp: Variants = {
 
 export default function COOTestimony() {
   return (
-    <section className="w-full bg-white text-black py-32 px-6 md:px-16 overflow-hidden">
+    <section className="w-full bg-white text-black py-4 px-6 md:px-16 overflow-hidden">
       <div className="max-w-4xl mx-auto text-center">
         {/* Quote */}
         <motion.blockquote
@@ -66,10 +66,10 @@ export default function COOTestimony() {
             Founder
           </p>
 
-          <p className="font-semibold text-lg">Ayham Muhrez</p>
+          {/* <p className="font-semibold text-lg">Ayham Muhrez</p>
           <p className="text-sm uppercase tracking-wider text-gray-500">
             Co-Founder
-          </p>
+          </p> */}
         </motion.div>
       </div>
     </section>

@@ -36,7 +36,7 @@ const projects = [
 // Brand font selector
 function getBrandFont(title: string) {
   switch (title) {
-    case "AZURA":
+    case "Developer":
       return "font-azura lowercase"; // Playfair Display
     case "ADDRESSBALI®":
       return "font-address"; // Proxima Nova

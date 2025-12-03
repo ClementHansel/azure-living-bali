@@ -4,7 +4,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrambleText } from "@/hooks/useScrambleText";
-import ParallaxLayer from "@/components/ParallaxLayer";
+import ParallaxLayer from "@/components/home/ParallaxLayer";
 
 type ShowcaseItem = {
   id: number;

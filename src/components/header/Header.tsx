@@ -58,7 +58,7 @@ export default function Header() {
         <div
           className={`text-lg font-semibold tracking-tight whitespace-nowrap transition-colors duration-300 ${textColorClass}`}
         >
-          NEO THE AGENCY
+          neo the agency
         </div>
 
         {/* HAMBURGER BUTTON */}

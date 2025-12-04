@@ -43,13 +43,11 @@ export default function WhatWeDo() {
       title: "TECHNOLOGY",
       subtitle: "Powering seamless experiences",
       points: [
-        "Meta",
-        "Google Ads",
         "CRM",
-        "WordPress",
-        "Webflow",
+        "Canva",
+        "Figma",
         "SEO",
-        "HTML",
+        "Next.js",
         "Automation",
         "Tracking & Analytics",
         "AI",
@@ -73,6 +71,8 @@ export default function WhatWeDo() {
       title: "PERFORMANCE MARKETING (ADS)",
       subtitle: "Precision Ads. Predictable Growth.",
       points: [
+        "Meta",
+        "Google Ads",
         "High Conversion Landingpages",
         "Tracking & Analytics",
         "Reporting",
@@ -108,7 +108,7 @@ export default function WhatWeDo() {
           custom={1}
         >
           We love to create brands, convert leads into fans, and drive your
-          growth. Relentless Perfectionism, always customer-centered,
+          growth.Relentless Perfectionism,always customer-centered,
           high-conversion focussed.
         </motion.p>
       </div>

@@ -40,6 +40,14 @@
 
 @font-face {
   font-family: "Söhne Mono";
+  src: url("/fonts/TestSohne-Buch-BF663d89cd32e6a.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Söhne Mono";
   src: url("/fonts/TestSohneMono-KraftigKursiv-BF663d89ccea359.otf")
     format("opentype");
   font-weight: 700;
@@ -61,6 +69,9 @@
 
   /* BODY FONT */
   --font-sans: Inter, ui-sans-serif, system-ui;
+
+  /* Typical FONT */
+  --font-sohne: Söhne Mono Leicht, ui-sans-serif, system-ui;
 
   /* BRAND FONT */
   --font-brand: "Söhne Mono", monospace;

@@ -1,8 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/pages/**/*.{ts,tsx,js,jsx}",
-    "./src/components/**/*.{ts,tsx,js,jsx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}", // Required if you use `/app`
   ],
   theme: {
     extend: {
@@ -19,8 +20,11 @@ module.exports = {
         // BRAND FONT (HEADINGS, TITLES, SPECIAL UI)
         brand: ['"Söhne Mono"', "monospace"],
 
-        // Optional explicit mono
+        // Explicit mono
         mono: ['"Söhne Mono"', "monospace"],
+
+        // Explicit mono2
+        mono2: ['"Söhne Mono"', "monospace"],
       },
     },
   },

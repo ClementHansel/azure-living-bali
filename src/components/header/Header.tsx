@@ -46,26 +46,26 @@ export default function Header() {
       <div
         ref={headerRef}
         className={`
-          fixed top-0 left-0 w-full z-200
-          flex items-center justify-between
-          px-6 py-4
-          transition-all duration-300
-          ${headerBgClass}
-          overflow-visible
-        `}
+    fixed top-0 left-0 w-full z-200
+    flex justify-center items-center
+    px-6 py-4
+    transition-all duration-300
+    ${headerBgClass}
+    overflow-visible
+  `}
       >
         {/* LOGO */}
         <div
-          className={`text-lg font-semibold tracking-tight whitespace-nowrap transition-colors duration-300 ${textColorClass}`}
+          className={`text-lg font-semibold tracking-tight items-center whitespace-nowrap transition-colors duration-300 ${textColorClass}`}
         >
-          neo the agency
+          neo.
         </div>
 
         {/* HAMBURGER BUTTON */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
-          className="relative w-14 h-14 flex items-center justify-center shrink-0 overflow-visible z-500"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-end overflow-visible z-500"
         >
           {/* TOP LINE */}
           <motion.span

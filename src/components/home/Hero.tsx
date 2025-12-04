@@ -90,7 +90,7 @@ export default function Hero() {
         behavior: "smooth",
       });
 
-      let start = performance.now();
+      const start = performance.now();
       const check = () => {
         const diff = Math.abs(window.scrollY - target);
         if (diff < 2 || performance.now() - start > 1200) {
@@ -188,9 +188,6 @@ export default function Hero() {
       setActiveIndex(i);
     });
   };
-
-  /* ---------------- HAMBURGER MENU ---------------- */
-  const [open, setOpen] = useState(false);
 
   return (
     <section

@@ -8,18 +8,7 @@ import MenuPanel from "./MenuPanel";
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-
-  // Update header height for MenuPanel offset
-  useEffect(() => {
-    if (!headerRef.current) return;
-
-    const resize = () => setHeaderHeight(headerRef.current!.offsetHeight);
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, []);
 
   // Track scroll to toggle background and text color
   useEffect(() => {
@@ -99,7 +88,7 @@ export default function Header() {
       </div>
 
       {/* MENU PANEL */}
-      <MenuPanel open={menuOpen} headerHeight={headerHeight} />
+      <MenuPanel open={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 }

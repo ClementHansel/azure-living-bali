@@ -1,153 +1,113 @@
-// src/components/WhatWeDo.tsx
 "use client";
 
-import { motion, Variants, Easing } from "framer-motion";
-import Link from "next/link";
+import Image from "next/image";
 
-const easeCurve: Easing = [0.25, 0.1, 0.25, 1]; // cubic-bezier ease
-
-// ✅ Fade-Up with TypeScript-safe easing and stagger delay
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: easeCurve,
-      delay: i * 0.15,
-    },
-  }),
-  exit: {
-    opacity: 0,
-    y: 40,
-    transition: { duration: 0.4, ease: easeCurve },
+const projects = [
+  {
+    id: 1,
+    image: "/images/6907a82e05f27503ad48410d.png",
+    title: "AZURA",
+    subtitle: "",
+    role: "Full Digital Marketing Strategy and Implementation Partner",
+    services:
+      "Strategy / Brand & Campaign / CRM / Automations / Content Production",
   },
-};
+  {
+    id: 2,
+    image: "/images/6907a82eebf93330fd292a20.png",
+    title: "ADDRESSBALI®",
+    subtitle: "",
+    role: "Strategy Accelerator and Creative Partner",
+    services:
+      "Strategy / Brand & Campaign / CRM / Automations / Content Production",
+  },
+  {
+    id: 3,
+    image: "/images/6907a82eebf9335152292a1f.png",
+    title: "YAMAHA",
+    subtitle: "",
+    role: "Digital Strategy Partner and Social Media Content Provider",
+    services: "Strategy / Brand & Campaign / Social Media / Automations",
+  },
+];
 
-export default function WhatWeDo() {
-  const sections = [
-    {
-      title: "STRATEGY",
-      subtitle: "Connecting insight to impact",
-      points: [
-        "Brand Identity",
-        "Journey Mapping",
-        "Strategy Consulting",
-        "Experience Design",
-        "Process Design",
-      ],
-      link: "/strategy",
-    },
-    {
-      title: "TECHNOLOGY",
-      subtitle: "Powering seamless experiences",
-      points: [
-        "CRM",
-        "Canva",
-        "Figma",
-        "SEO",
-        "Next.js",
-        "Automation",
-        "Tracking & Analytics",
-        "AI",
-      ],
-      link: "/technology",
-    },
-    {
-      title: "CREATIVES",
-      subtitle: "Design that moves people",
-      points: [
-        "Ad Creative",
-        "Brochure Design",
-        "Landing Pages",
-        "Videography",
-        "Photography",
-        "Brand Assets",
-      ],
-      link: "/creatives",
-    },
-    {
-      title: "PERFORMANCE MARKETING (ADS)",
-      subtitle: "Precision Ads. Predictable Growth.",
-      points: [
-        "Meta",
-        "Google Ads",
-        "High Conversion Landingpages",
-        "Tracking & Analytics",
-        "Reporting",
-        "Campaign Design",
-      ],
-      link: "/performance",
-    },
-  ];
+// Brand font selector
+function getBrandFont(title: string) {
+  switch (title) {
+    case "Developer":
+      return "font-azura lowercase";
+    case "ADDRESSBALI®":
+      return "font-address";
+    case "YAMAHA":
+      return "font-yamaha";
+    default:
+      return "font-inter";
+  }
+}
 
+export default function Projects() {
   return (
-    <section className="w-full bg-white text-black py-24 px-6 md:px-16 overflow-hidden">
-      <div className="max-w-5xl mx-auto text-center">
-        {/* Section Heading */}
-        <motion.h2
-          className="text-4xl md:text-6xl font-extrabold mb-6"
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: false, amount: 0.3 }}
-          variants={fadeUp}
-          custom={0}
-        >
-          WHAT WE DO
-        </motion.h2>
+    <section
+      className="
+        bg-white text-black
+        flex flex-col items-center justify-center
+        px-6 md:px-12
+        py-10 md:py-16
+      "
+    >
+      {/* Section Header */}
+      <h2 className="text-4xl md:text-6xl font-extrabold mb-10 tracking-tight font-inter">
+        OUR PROJECTS
+      </h2>
 
-        <motion.p
-          className="text-lg md:text-xl text-gray-600 leading-relaxed mb-16"
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: false, amount: 0.3 }}
-          variants={fadeUp}
-          custom={1}
-        >
-          We love to create brands, convert leads into fans, and drive your
-          growth.Relentless Perfectionism,always customer-centered,
-          high-conversion focussed.
-        </motion.p>
-      </div>
-
-      {/* Section List */}
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16">
-        {sections.map((section, i) => (
-          <motion.div
-            key={section.title}
-            className="text-center md:text-left border-t border-gray-200 pt-8"
-            initial="hidden"
-            whileInView="visible"
-            exit="exit"
-            viewport={{ once: false, amount: 0.3 }}
-            variants={fadeUp}
-            custom={i + 2}
+      {/* Project Cards */}
+      <div
+        className="
+          grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+          gap-10 sm:gap-12
+          max-w-7xl w-full
+        "
+      >
+        {projects.map((p) => (
+          <div
+            key={p.id}
+            className="
+              rounded-3xl overflow-hidden
+              bg-gray-50 shadow-sm
+            "
           >
-            <Link href={section.link} className="group block">
-              <motion.h3
-                className="text-2xl md:text-3xl font-bold mb-2 group-hover:text-yellow-600 transition-colors"
-                whileHover={{ scale: 1.05 }}
+            <div className="relative w-full h-64 sm:h-72 md:h-80 overflow-hidden">
+              <Image
+                src={p.image}
+                alt={p.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            <div className="p-6 sm:p-7 md:p-8">
+              <h3
+                className={`
+                  text-2xl md:text-3xl mb-2 tracking-tight
+                  ${getBrandFont(p.title)}
+                `}
               >
-                {section.title}
-              </motion.h3>
+                {p.title}
+              </h3>
 
-              <p className="text-gray-500 mb-4">{section.subtitle}</p>
+              {p.subtitle && (
+                <p className="text-gray-500 mb-2 font-inter">{p.subtitle}</p>
+              )}
 
-              <ul className="flex flex-wrap justify-center md:justify-start gap-2 text-gray-700 text-sm">
-                {section.points.map((p, j) => (
-                  <li
-                    key={j}
-                    className="bg-gray-100 px-3 py-1 rounded-full hover:bg-yellow-100 hover:text-yellow-700 transition-colors"
-                  >
-                    {p}
-                  </li>
-                ))}
-              </ul>
-            </Link>
-          </motion.div>
+              <p className="text-sm font-medium text-gray-700 mb-4 font-inter">
+                {p.role}
+              </p>
+
+              <p className="text-gray-600 text-sm leading-relaxed font-inter">
+                {p.services}
+              </p>
+            </div>
+          </div>
         ))}
       </div>
     </section>

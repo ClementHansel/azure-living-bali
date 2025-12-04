@@ -215,23 +215,23 @@ export default function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: cinematic }}
-            className="text-[#1c1c1c] max-w-xl space-y-2 md:space-y-4"
+            className="text-white max-w-xl space-y-2 md:space-y-4"
           >
             <h1 className="text-4xl md:text-4xl font-light font-brand">neo.</h1>
 
-            <p className="text-lg md:text-lg font-mono2 text-[#3a3a3a]">
+            <p className="text-lg md:text-lg font-mono2 text-white">
               global luxury
               <br />
               brand factory.
             </p>
 
-            <p className="text-lg md:text-lg font-mono2 text-[#3a3a3a]">
+            <p className="text-lg md:text-lg font-mono2 text-white">
               creating in
               <br />
               bali and berlin.
             </p>
 
-            <p className="text-lg md:text-lg font-mono2 text-[#3a3a3a]">
+            <p className="text-lg md:text-lg font-mono2 text-white">
               founded by
               <br />
               consultants and
@@ -242,9 +242,9 @@ export default function Hero() {
         </div>
 
         {/* RIGHT MENU */}
-        <div className="absolute bottom-35 right-6 md:bottom-25 md:right-16 z-30 text-right font-mono2 text-[#3a3a3a]">
-          <div className="text-2xl md:text-3xl tracking-widest font-mono2 text-[#1c1c1c] mb-4 md:mb-6">
-            industries
+        <div className="absolute bottom-35 right-6 md:bottom-25 md:right-16 z-30 text-right font-mono2 text-white">
+          <div className="text-2xl md:text-3xl tracking-widest font-mono2 text-white mb-4 md:mb-6">
+            industries.
           </div>
 
           <ul className="flex flex-col gap-3 md:gap-4">
@@ -257,7 +257,7 @@ export default function Hero() {
                       animate={{
                         x: active ? 8 : 0,
                         opacity: active ? 1 : 0.9,
-                        color: active ? "#000000" : "#ffffffa3",
+                        color: active ? "#FFFFFFFF" : "#ffffffa3",
                       }}
                       transition={{ ease: cinematic, duration: 0.4 }}
                       className="text-xl md:text-3xl font-light font-inter transition-all"

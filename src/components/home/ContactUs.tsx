@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 
 // cSpell:ignore gohighlevel
 export default function ContactUs() {
@@ -41,23 +40,13 @@ export default function ContactUs() {
       className="w-full bg-white text-black py-20 px-6 flex justify-center"
     >
       <div className="w-full max-w-2xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-4xl md:text-6xl font-extrabold mb-6 text-center"
-        >
+        <h2 className="text-4xl md:text-6xl font-extrabold mb-6 text-center">
           CONTACT US
-        </motion.h2>
+        </h2>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-gray-600 text-center mb-10"
-        >
+        <p className="text-gray-600 text-center mb-10">
           Fill the form and our team will get back to you shortly.
-        </motion.p>
+        </p>
 
         <form
           onSubmit={handleSubmit}
@@ -136,11 +125,7 @@ export default function ContactUs() {
           <button
             type="submit"
             disabled={loading}
-            className="
-              w-full py-3 rounded-full 
-              text-white bg-black hover:bg-gray-900 
-              transition-all font-medium disabled:opacity-60
-            "
+            className="w-full py-3 rounded-full text-white bg-black font-medium disabled:opacity-60"
           >
             {loading ? "Sending..." : "Send Message"}
           </button>
@@ -150,16 +135,8 @@ export default function ContactUs() {
             href="https://wa.me/4917682360647"
             target="_blank"
             rel="noopener noreferrer"
-            className="
-    w-full py-3 rounded-full
-    flex items-center justify-center gap-2
-    font-medium text-white
-    bg-[#25D366]
-    hover:bg-[#1ebe5d]
-    transition-all
-  "
+            className="w-full py-3 flex items-center justify-center gap-2 font-medium text-white bg-[#25D366]"
           >
-            {/* Perfectly centered official WhatsApp Logo */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="22"

@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useInView, Variants } from "framer-motion";
-import { useRef } from "react";
 
 const projects = [
   {
@@ -37,41 +35,19 @@ const projects = [
 function getBrandFont(title: string) {
   switch (title) {
     case "Developer":
-      return "font-azura lowercase"; // Playfair Display
+      return "font-azura lowercase";
     case "ADDRESSBALI®":
-      return "font-address"; // Proxima Nova
+      return "font-address";
     case "YAMAHA":
-      return "font-yamaha"; // Helvetica Condensed Black
+      return "font-yamaha";
     default:
       return "font-inter";
   }
 }
 
 export default function Projects() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: false, amount: 0.2 });
-
-  const EASING: [number, number, number, number] = [0.6, 0.01, 0.05, 0.95];
-
-  const containerVariants: Variants = {
-    hidden: {},
-    visible: {
-      transition: { staggerChildren: 0.15 },
-    },
-  };
-
-  const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: EASING },
-    },
-  };
-
   return (
     <section
-      ref={ref}
       className="
         bg-white text-black
         flex flex-col items-center justify-center
@@ -80,23 +56,12 @@ export default function Projects() {
       "
     >
       {/* Section Header */}
-      <motion.h2
-        initial={{ opacity: 0, y: 25 }}
-        animate={
-          inView
-            ? { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASING } }
-            : { opacity: 0, y: 25 }
-        }
-        className="text-4xl md:text-6xl font-extrabold mb-10 tracking-tight font-inter"
-      >
+      <h2 className="text-4xl md:text-6xl font-extrabold mb-10 tracking-tight font-inter">
         OUR PROJECTS
-      </motion.h2>
+      </h2>
 
       {/* Project Cards */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
+      <div
         className="
           grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
           gap-10 sm:gap-12
@@ -104,13 +69,11 @@ export default function Projects() {
         "
       >
         {projects.map((p) => (
-          <motion.div
+          <div
             key={p.id}
-            variants={cardVariants}
             className="
-              group rounded-3xl overflow-hidden
+              rounded-3xl overflow-hidden
               bg-gray-50 shadow-sm
-              hover:shadow-xl transition-all duration-500
             "
           >
             <div className="relative w-full h-64 sm:h-72 md:h-80 overflow-hidden">
@@ -118,11 +81,7 @@ export default function Projects() {
                 src={p.image}
                 alt={p.title}
                 fill
-                className="
-                  object-cover
-                  transition-transform duration-700
-                  group-hover:scale-105
-                "
+                className="object-cover"
               />
             </div>
 
@@ -148,9 +107,9 @@ export default function Projects() {
                 {p.services}
               </p>
             </div>
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 }

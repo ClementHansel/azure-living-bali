@@ -25,7 +25,9 @@ export default function Hero() {
   const scrollTimeoutRef = useRef(false);
   const lastScrollYRef = useRef(0);
 
-  /* ---------------- VIDEO ---------------- */
+  /* -----------------------------------------------
+   *  VIDEO
+   ------------------------------------------------*/
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -38,17 +40,27 @@ export default function Hero() {
     return () => v.removeEventListener("loadeddata", playVideo);
   }, []);
 
-  /* ---------------- CHECK IF HERO IS IN VIEW ---------------- */
-  const heroInView = () => {
+  /* -----------------------------------------------
+   *  HERO VISIBILITY RULE
+   *
+   *  Hero must be *fully or almost fully* inside viewport
+   *  before lock is allowed.
+   *
+   *  (90% visible threshold)
+   ------------------------------------------------*/
+  const heroFullyInView = () => {
     if (!sectionRef.current) return false;
     const rect = sectionRef.current.getBoundingClientRect();
+
     const visibleHeight =
       Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
 
-    return visibleHeight >= window.innerHeight * 0.7;
+    return visibleHeight >= window.innerHeight * 0.9;
   };
 
-  /* ---------------- SCROLL LOCK ---------------- */
+  /* -----------------------------------------------
+   *  SCROLL LOCK
+   ------------------------------------------------*/
   const lockScroll = () => {
     lastScrollYRef.current = window.scrollY;
 
@@ -71,22 +83,22 @@ export default function Hero() {
     setIsLocked(false);
   };
 
-  /* ---------------- APPLY LOCK BASED ON INDEX ---------------- */
+  /* -----------------------------------------------
+   *  APPLY LOCK BASED ON INDEX
+   ------------------------------------------------*/
   useEffect(() => {
-    const shouldLock = heroInView() && activeIndex < MENU.length - 1;
+    const shouldLock = heroFullyInView() && activeIndex < MENU.length - 1;
 
-    if (shouldLock && !isLocked) {
-      requestAnimationFrame(lockScroll);
-    }
-    if (!shouldLock && isLocked) {
-      requestAnimationFrame(unlockScroll);
-    }
+    if (shouldLock && !isLocked) requestAnimationFrame(lockScroll);
+    if (!shouldLock && isLocked) requestAnimationFrame(unlockScroll);
   }, [activeIndex, isLocked]);
 
-  /* ---------------- SCROLL & SWIPE SYSTEM ---------------- */
+  /* -----------------------------------------------
+   *  WHEEL + TOUCH SCROLL SYSTEM
+   ------------------------------------------------*/
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (!heroInView()) return;
+      if (!heroFullyInView()) return;
       if (scrollTimeoutRef.current) return;
 
       scrollTimeoutRef.current = true;
@@ -106,7 +118,7 @@ export default function Hero() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!heroInView()) return;
+      if (!heroFullyInView()) return;
       if (scrollTimeoutRef.current) return;
       if (startTouchYRef.current == null) return;
 
@@ -143,18 +155,20 @@ export default function Hero() {
     };
   }, [activeIndex, isLocked]);
 
-  /* ---------------- MENU CLICK (WORKS ANYTIME) ---------------- */
+  /* -----------------------------------------------
+   *  MENU CLICK
+   ------------------------------------------------*/
   const handleSelect = (i: number) => {
-    // ALWAYS update active index (no heroInView condition)
     setActiveIndex(i);
 
-    // When clicking menu from outside Hero, scroll back to Hero
-    if (!heroInView() && sectionRef.current) {
+    if (!heroFullyInView() && sectionRef.current) {
       sectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  /* ---------------- UI ---------------- */
+  /* -----------------------------------------------
+   *  UI
+   ------------------------------------------------*/
   return (
     <section
       ref={sectionRef}
@@ -209,26 +223,23 @@ export default function Hero() {
           </div>
 
           <ul className="flex flex-col gap-2">
-            {MENU.map((item, i) => {
-              const active = i === activeIndex;
-              return (
-                <li key={item.id}>
-                  <button onClick={() => handleSelect(i)}>
-                    <motion.span
-                      animate={{
-                        x: active ? 8 : 0,
-                        opacity: active ? 1 : 0.9,
-                        color: active ? "#ffffffff" : "#ffffffa3",
-                      }}
-                      transition={{ ease: cinematic, duration: 0.4 }}
-                      className="text-[22px] md:text-[24px] font-light font-inter"
-                    >
-                      {item.label}
-                    </motion.span>
-                  </button>
-                </li>
-              );
-            })}
+            {MENU.map((item, i) => (
+              <li key={item.id}>
+                <button onClick={() => handleSelect(i)}>
+                  <motion.span
+                    animate={{
+                      x: i === activeIndex ? 8 : 0,
+                      opacity: i === activeIndex ? 1 : 0.9,
+                      color: i === activeIndex ? "#ffffffff" : "#ffffffa3",
+                    }}
+                    transition={{ ease: cinematic, duration: 0.4 }}
+                    className="text-[22px] md:text-[24px] font-light font-inter"
+                  >
+                    {item.label}
+                  </motion.span>
+                </button>
+              </li>
+            ))}
           </ul>
 
           <div className="mt-3 text-xs text-gray-300">

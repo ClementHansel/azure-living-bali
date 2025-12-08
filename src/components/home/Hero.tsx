@@ -208,7 +208,7 @@ export default function Hero() {
           <source src="/cut.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 bg-black/5" />
+        <div className="absolute inset-0 bg-black/10" />
 
         {/* ----------------
             LEFT: responsive Figma-derived layout
@@ -227,7 +227,7 @@ export default function Hero() {
     text-[22px] md:text-[24px] md:w-[434px]
     absolute 
     top-16 md:top-[87px]
-    left-6 md:left-1/2 md:-translate-x-1/2
+    left-6 md:left-16
   "
             style={{ letterSpacing: "-0.01em" }}
           >
@@ -239,7 +239,7 @@ export default function Hero() {
             className="
     pointer-events-auto absolute 
     top-[140px] md:top-[159px]
-    left-6 md:left-3
+    left-6 md:left-16
     text-white font-mono2 font-light 
     text-[22px] md:text-[24px]
     leading-[22px] md:w-[223px]
@@ -255,8 +255,8 @@ export default function Hero() {
           <p
             className="
     pointer-events-auto absolute 
-    top-[206px] md:top-[225px]
-    left-6 md:left-3
+    top-[210px] md:top-[225px]
+    left-6 md:left-16
     text-white font-mono2 font-light
     text-[22px] md:text-[24px]
     leading-[22px] md:w-[195px]
@@ -272,8 +272,8 @@ export default function Hero() {
           <p
             className="
     pointer-events-auto absolute 
-    top-[270px] md:top-[291px]
-    left-6 md:left-3
+    top-[280px] md:top-[291px]
+   left-6 md:left-16
     text-white font-mono2 font-light
     text-[22px] md:text-[24px]
     leading-[22px] md:w-[195px]

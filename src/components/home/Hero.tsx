@@ -1,3 +1,4 @@
+// src/components/home/Hero.tsx
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -209,39 +210,123 @@ export default function Hero() {
 
         <div className="absolute inset-0 bg-black/5" />
 
-        {/* LEFT TEXT */}
-        <div className="sticky top-0 h-svh flex items-start px-6 md:px-12 pt-20 z-20">
-          <motion.div
+        {/* ----------------
+            LEFT: responsive Figma-derived layout
+            - Desktop: positions mimic Figma
+            - Tablet/Mobile: stacks and scales
+           ---------------- */}
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          {/* Title: "neo." — centered at desktop, stacked on mobile */}
+          <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: cinematic }}
-            className="text-white max-w-xl space-y-2 md:space-y-4"
+            className="pointer-events-auto text-[#2B2B2E] font-brand font-normal leading-[80px] tracking-tight
+                       text-[20px] md:text-[24px] md:w-[434px]
+                       absolute md:left-1/2 md:transform md:-translate-x-1/2
+                       top-[64px] md:top-[87px] left-6 md:left-auto"
+            style={{ letterSpacing: "-0.01em" }}
           >
-            <h1 className="text-4xl md:text-4xl font-light font-brand">neo.</h1>
+            neo.
+          </motion.h1>
 
-            <p className="text-lg md:text-lg font-mono2 text-white">
-              global luxury
+          {/* Block: global luxury brand factory. */}
+          <p
+            className="pointer-events-auto absolute top-[140px] md:top-[159px] left-3 md:left-[12px]
+                       text-[#2B2B2E] font-mono2 font-[300] text-[18px] md:text-[20px]
+                       leading-[22px] md:w-[223px]"
+            style={{ letterSpacing: "-0.01em", margin: 0 }}
+          >
+            global luxury
+            <br />
+            brand factory.
+          </p>
+
+          {/* Block: creating in bali and berlin. */}
+          <p
+            className="pointer-events-auto absolute top-[206px] md:top-[225px] left-3 md:left-[12px]
+                       text-[#2B2B2E] font-mono2 font-[300] text-[18px] md:text-[20px]
+                       leading-[22px] md:w-[195px]"
+            style={{ letterSpacing: "-0.01em", margin: 0 }}
+          >
+            creating in
+            <br />
+            bali and berlin.
+          </p>
+
+          {/* Block: founded by consultants and developers. */}
+          <p
+            className="pointer-events-auto absolute top-[270px] md:top-[291px] left-3 md:left-[12px]
+                       text-[#2B2B2E] font-mono2 font-[300] text-[18px] md:text-[20px]
+                       leading-[22px] md:w-[195px]"
+            style={{ letterSpacing: "-0.01em", margin: 0 }}
+          >
+            founded by
+            <br />
+            consultants and
+            <br />
+            developers.
+          </p>
+
+          {/* DECOR / services right-aligned group (desktop). On mobile these are hidden or stacked under content */}
+          <div className="hidden md:block pointer-events-auto">
+            {/* "digital marketing" right-aligned group */}
+            <p
+              className="absolute top-[377px] left-[130px] w-[294px] text-right text-[#2B2B2E]
+                         font-mono2 font-[300] text-[20px] leading-[22px]"
+              style={{ letterSpacing: "-0.01em", margin: 0 }}
+            >
+              digital
               <br />
-              brand factory.
+              marketing
             </p>
 
-            <p className="text-lg md:text-lg font-mono2 text-white">
-              creating in
-              <br />
-              bali and berlin.
+            {/* rounded translucent button for strategy. (Figma) */}
+            <div
+              className="absolute left-[229px] top-[431px] w-[195px] h-[62px] rounded-[30px]
+                         bg-[rgba(0,0,0,0.07)]/50 flex items-center justify-center"
+              style={{ padding: "20px 32px", gap: "9px" }}
+            >
+              <button
+                onClick={() => {
+                  /* keep inert handler — logic preserved: you can change to navigate later */
+                  console.log("strategy button clicked");
+                }}
+                className="font-mono2 text-[20px] text-white"
+                style={{ all: "unset", cursor: "pointer" }}
+              >
+                strategy.
+              </button>
+            </div>
+
+            {/* white stacked labels */}
+            <p
+              className="absolute top-[463px] left-[229px] w-[195px] text-right text-white
+                         font-mono2 font-[250] text-[20px] leading-[22px]"
+              style={{ letterSpacing: "-0.01em", margin: 0 }}
+            >
+              creatives.
             </p>
 
-            <p className="text-lg md:text-lg font-mono2 text-white">
-              founded by
-              <br />
-              consultants and
-              <br />
-              developers.
+            <p
+              className="absolute top-[495px] left-[229px] w-[195px] text-right text-white
+                         font-mono2 font-[250] text-[20px] leading-[22px]"
+              style={{ letterSpacing: "-0.01em", margin: 0 }}
+            >
+              technology.
             </p>
-          </motion.div>
+
+            <p
+              className="absolute top-[527px] left-[229px] w-[195px] text-right text-white
+                         font-mono2 font-[250] text-[20px] leading-[22px]"
+              style={{ letterSpacing: "-0.01em", margin: 0 }}
+            >
+              ads.
+            </p>
+          </div>
         </div>
 
-        {/* RIGHT MENU */}
+        {/* RIGHT MENU (unchanged logic / layout) */}
         <div className="absolute bottom-35 right-6 md:bottom-25 md:right-16 z-30 text-right font-mono2 text-white">
           <div className="text-2xl md:text-3xl tracking-widest font-mono2 text-white mb-4 md:mb-6">
             industries.
@@ -275,7 +360,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* WHATSAPP BUTTON */}
+        {/* WHATSAPP BUTTON (unchanged) */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
           <a
             href="https://wa.me/4917682360647"

@@ -135,7 +135,7 @@ export default function ContactUs() {
             href="https://wa.me/4917682360647"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 flex items-center justify-center gap-2 font-medium text-white bg-[#25D366]"
+            className="flex justify-center items-center gap-3 bg-[#25D366] text-white px-6 py-3 rounded-full shadow-lg hover:shadow-2xl transition-all hover:scale-105 active:scale-95"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 
+// Project Data
 const projects = [
   {
     id: 1,
@@ -34,6 +35,7 @@ const projects = [
 // Brand font selector
 function getBrandFont(title: string) {
   switch (title) {
+    case "AZURA":
     case "Developer":
       return "font-azura lowercase";
     case "ADDRESSBALI®":
@@ -48,6 +50,7 @@ function getBrandFont(title: string) {
 export default function Projects() {
   return (
     <section
+      id="projects"
       className="
         bg-white text-black
         flex flex-col items-center justify-center
@@ -69,19 +72,21 @@ export default function Projects() {
         "
       >
         {projects.map((p) => (
-          <div
+          <article
             key={p.id}
             className="
               rounded-3xl overflow-hidden
               bg-gray-50 shadow-sm
+              transition-all duration-300 hover:shadow-md
             "
           >
-            <div className="relative w-full h-64 sm:h-72 md:h-80 overflow-hidden">
+            <div className="relative w-full h-64 sm:h-72 md:h-80">
               <Image
                 src={p.image}
-                alt={p.title}
+                alt={p.title || "Project image"}
                 fill
                 className="object-cover"
+                priority={p.id === 1}
               />
             </div>
 
@@ -99,7 +104,7 @@ export default function Projects() {
                 <p className="text-gray-500 mb-2 font-inter">{p.subtitle}</p>
               )}
 
-              <p className="text-sm font-medium text-gray-700 mb-4 font-inter">
+              <p className="text-sm font-semibold text-gray-700 mb-4 font-inter">
                 {p.role}
               </p>
 
@@ -107,7 +112,7 @@ export default function Projects() {
                 {p.services}
               </p>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </section>

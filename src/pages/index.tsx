@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Company from "@/components/home/Company";
@@ -7,7 +5,6 @@ import ContactUs from "@/components/home/ContactUs";
 import COOTestimony from "@/components/home/COOTestimony";
 import Hero from "@/components/home/Hero";
 import Projects from "@/components/home/Projects";
-import WhatWeDo from "@/components/home/WhatWeDo";
 import { Project } from "@/types";
 
 export default function Home({}: { projects?: Project[] }) {
@@ -35,9 +32,6 @@ export default function Home({}: { projects?: Project[] }) {
       </div>
       <div id="projects">
         <Projects />
-      </div>
-      <div id="whatwedo">
-        <WhatWeDo />
       </div>
       <div id="coo">
         <COOTestimony />

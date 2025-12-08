@@ -14,7 +14,6 @@ export default function MenuPanel({ open, onClose }: MenuPanelProps) {
     { label: "Home", target: "hero" },
     { label: "Who we are", target: "company" },
     { label: "Our Projects", target: "projects" },
-    { label: "What we do", target: "whatwedo" },
     { label: "Contact Us", target: "contact" },
   ];
 

@@ -5,9 +5,6 @@ import { useRouter } from "next/router";
 import "../styles/globals.css";
 import Layout from "../components/home/Layout";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
-import Header from "@/components/header/Header";
-import { Footer } from "@/components/Footer";
-
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 

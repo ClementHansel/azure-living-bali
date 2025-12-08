@@ -22,16 +22,15 @@ export default function Hero() {
 
   const startTouchYRef = useRef<number | null>(null);
   const scrollTimeoutRef = useRef(false);
+
   const scrollYBeforeLockRef = useRef(0);
   const [isLocked, setIsLocked] = useState(false);
-
-  /* ---------------- NEW CENTERING STATE ---------------- */
-  const [isCentering, setIsCentering] = useState(false);
 
   /* ---------------- VIDEO ---------------- */
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+
     v.preload = "auto";
     v.muted = true;
     v.playsInline = true;
@@ -49,12 +48,10 @@ export default function Hero() {
   /* ---------------- SCROLL LOCK ---------------- */
   const lockScroll = () => {
     scrollYBeforeLockRef.current = window.scrollY;
-
     document.body.style.position = "fixed";
     document.body.style.top = `-${scrollYBeforeLockRef.current}px`;
     document.body.style.left = "0";
     document.body.style.right = "0";
-
     setIsLocked(true);
   };
 
@@ -68,69 +65,34 @@ export default function Hero() {
     setIsLocked(false);
   };
 
-  const isHeroInView = () => {
+  /* ---------------- LOCK ONLY IF HERO FULLY VISIBLE ---------------- */
+  const heroFullyInView = () => {
     if (!sectionRef.current) return false;
     const rect = sectionRef.current.getBoundingClientRect();
-    return rect.bottom > 0 && rect.top < window.innerHeight;
+
+    return rect.top >= 0 && rect.bottom <= window.innerHeight;
   };
 
-  /* ---------------- CENTER HERO (with await) ---------------- */
-  const centerHeroToViewport = () => {
-    return new Promise<void>((resolve) => {
-      if (!sectionRef.current) return resolve();
-
-      const top = sectionRef.current.offsetTop;
-      const height = sectionRef.current.offsetHeight;
-
-      const target = top - (window.innerHeight - height) / 2;
-
-      setIsCentering(true);
-
-      window.scrollTo({
-        top: target,
-        behavior: "smooth",
-      });
-
-      const start = performance.now();
-      const check = () => {
-        const diff = Math.abs(window.scrollY - target);
-        if (diff < 2 || performance.now() - start > 1200) {
-          setIsCentering(false);
-          return resolve();
-        }
-        requestAnimationFrame(check);
-      };
-
-      requestAnimationFrame(check);
-    });
-  };
-
-  /* ---------------- LOCK MANAGER (fixed) ---------------- */
   useEffect(() => {
-    const shouldLock = activeIndex < MENU.length - 1 && isHeroInView();
+    const shouldLock = heroFullyInView() && activeIndex < MENU.length - 1;
 
-    if (shouldLock && !isLocked && !isCentering) {
-      centerHeroToViewport().then(() => {
-        requestAnimationFrame(() => lockScroll());
-      });
+    if (shouldLock && !isLocked) {
+      requestAnimationFrame(() => lockScroll());
     }
 
-    if (!shouldLock && isLocked && !isCentering) {
+    if (!shouldLock && isLocked) {
       requestAnimationFrame(() => unlockScroll());
     }
-  }, [activeIndex, isLocked, isCentering]);
+  }, [activeIndex, isLocked]);
 
   /* ---------------- SCROLL & SWIPE ---------------- */
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (!isHeroInView()) return;
+      if (!heroFullyInView()) return;
       if (scrollTimeoutRef.current) return;
 
       scrollTimeoutRef.current = true;
-      setTimeout(() => (scrollTimeoutRef.current = false), 80);
-
-      // When scrolling inside hero → center it FIRST
-      if (!isLocked && !isCentering) centerHeroToViewport();
+      setTimeout(() => (scrollTimeoutRef.current = false), 100);
 
       if (activeIndex < MENU.length - 1) e.preventDefault();
 
@@ -144,17 +106,15 @@ export default function Hero() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isHeroInView()) return;
+      if (!heroFullyInView()) return;
       if (startTouchYRef.current == null || scrollTimeoutRef.current) return;
 
       const dy = startTouchYRef.current - e.touches[0].clientY;
 
-      // Center before locking
-      if (!isLocked && !isCentering) centerHeroToViewport();
-
       if (Math.abs(dy) > 30) {
         e.preventDefault();
         scrollTimeoutRef.current = true;
+
         setTimeout(() => (scrollTimeoutRef.current = false), 150);
 
         if (dy > 0) setActiveIndex((p) => Math.min(p + 1, MENU.length - 1));
@@ -175,19 +135,15 @@ export default function Hero() {
 
     return () => {
       if (isLocked) unlockScroll();
-
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [activeIndex, isLocked, isCentering]);
+  }, [activeIndex, isLocked]);
 
   const handleSelect = (i: number) => {
-    // Force recenter on manual click
-    centerHeroToViewport().then(() => {
-      setActiveIndex(i);
-    });
+    setActiveIndex(i);
   };
 
   return (
@@ -208,77 +164,48 @@ export default function Hero() {
           <source src="/cut.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 bg-black/5" />
 
-        {/* ----------------
-            LEFT: responsive Figma-derived layout
-            - Desktop: positions mimic Figma
-            - Tablet/Mobile: stacks and scales
-           ---------------- */}
+        {/* LEFT TEXT BLOCKS (unchanged) */}
         <div className="absolute inset-0 z-20 pointer-events-none">
-          {/* Title: "neo." */}
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: cinematic }}
             className="
-    pointer-events-auto text-white font-brand font-normal 
-    leading-20 tracking-tight
-    text-[22px] md:text-[24px] md:w-[434px]
-    absolute 
-    top-16 md:top-[87px]
-    left-6 md:left-16
-  "
+              pointer-events-auto text-white font-brand font-normal 
+              leading-20 tracking-tight
+              text-[22px] md:text-[24px] md:w-[434px]
+              absolute 
+              top-16 md:top-[87px]
+              left-6 md:left-16
+            "
             style={{ letterSpacing: "-0.01em" }}
           >
             neo.
           </motion.h1>
 
-          {/* left column block 1 */}
           <p
-            className="
-    pointer-events-auto absolute 
-    top-[140px] md:top-[159px]
-    left-6 md:left-16
-    text-white font-mono2 font-light 
-    text-[22px] md:text-[24px]
-    leading-[22px] md:w-[223px]
-  "
-            style={{ letterSpacing: "-0.01em", margin: 0 }}
+            className="pointer-events-auto absolute top-[140px] md:top-[159px] left-6 md:left-16 text-white font-mono2 font-light text-[22px] md:text-[24px] leading-[22px] md:w-[223px]"
+            style={{ letterSpacing: "-0.01em" }}
           >
             global luxury
             <br />
             brand factory.
           </p>
 
-          {/* left column block 2 */}
           <p
-            className="
-    pointer-events-auto absolute 
-    top-[210px] md:top-[225px]
-    left-6 md:left-16
-    text-white font-mono2 font-light
-    text-[22px] md:text-[24px]
-    leading-[22px] md:w-[195px]
-  "
-            style={{ letterSpacing: "-0.01em", margin: 0 }}
+            className="pointer-events-auto absolute top-[206px] md:top-[225px] left-6 md:left-16 text-white font-mono2 font-light text-[22px] md:text-[24px] leading-[22px] md:w-[195px]"
+            style={{ letterSpacing: "-0.01em" }}
           >
             creating in
             <br />
             bali and berlin.
           </p>
 
-          {/* left column block 3 */}
           <p
-            className="
-    pointer-events-auto absolute 
-    top-[280px] md:top-[291px]
-   left-6 md:left-16
-    text-white font-mono2 font-light
-    text-[22px] md:text-[24px]
-    leading-[22px] md:w-[195px]
-  "
-            style={{ letterSpacing: "-0.01em", margin: 0 }}
+            className="pointer-events-auto absolute top-[270px] md:top-[291px] left-6 md:left-3 text-white font-mono2 font-light text-[22px] md:text-[24px] leading-[22px] md:w-[195px]"
+            style={{ letterSpacing: "-0.01em" }}
           >
             founded by
             <br />
@@ -288,7 +215,7 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* RIGHT MENU (unchanged logic / layout) */}
+        {/* RIGHT MENU */}
         <div className="absolute bottom-35 right-6 md:bottom-25 md:right-16 z-30 text-right font-mono2 text-white">
           <div className="text-[22px] md:text-[24px] tracking-widest font-mono2 text-white mb-1 md:mb-2">
             industries.
@@ -322,7 +249,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* WHATSAPP BUTTON (unchanged) */}
+        {/* WHATSAPP BUTTON */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
           <a
             href="https://wa.me/4917682360647"

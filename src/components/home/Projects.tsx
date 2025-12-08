@@ -41,7 +41,7 @@ function getBrandFont(title: string) {
     case "ADDRESSBALI®":
       return "font-ab";
     case "YAMAHA":
-      return "font-yamaha";
+      return "font-yamaha text-red font-bold";
     default:
       return "font-inter";
   }

@@ -182,7 +182,54 @@ export default function Hero() {
 
         <div className="absolute inset-0 bg-black/5" />
 
-        {/* --- Left Text Blocks Omitted (same as your code) --- */}
+        {/* LEFT TEXT BLOCKS (unchanged) */}
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          <motion.h1
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: cinematic }}
+            className="
+              pointer-events-auto text-white font-brand font-normal 
+              leading-20 tracking-tight
+              text-[22px] md:text-[24px] md:w-[434px]
+              absolute 
+              top-16 md:top-[87px]
+              left-6 md:left-16
+            "
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            neo.
+          </motion.h1>
+
+          <p
+            className="pointer-events-auto absolute top-[140px] md:top-[159px] left-6 md:left-16 text-white font-mono2 font-light text-[22px] md:text-[24px] leading-[22px] md:w-[223px]"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            global luxury
+            <br />
+            brand factory.
+          </p>
+
+          <p
+            className="pointer-events-auto absolute top-[206px] md:top-[225px] left-6 md:left-16 text-white font-mono2 font-light text-[22px] md:text-[24px] leading-[22px] md:w-[195px]"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            creating in
+            <br />
+            bali and berlin.
+          </p>
+
+          <p
+            className="pointer-events-auto absolute top-[270px] md:top-[291px] left-6 md:left-3 text-white font-mono2 font-light text-[22px] md:text-[24px] leading-[22px] md:w-[195px]"
+            style={{ letterSpacing: "-0.01em" }}
+          >
+            founded by
+            <br />
+            consultants and
+            <br />
+            developers.
+          </p>
+        </div>
 
         {/* RIGHT MENU */}
         <div className="absolute bottom-35 right-6 md:bottom-25 md:right-16 z-30 text-right font-mono2 text-white">
